@@ -22,62 +22,78 @@
             <!-- Left Column: Inputs -->
             <div class="calc-section inputs-section">
 
-                <!-- 1. 教室類型與數量 -->
+                <!-- 1. 新增租借項目 -->
                 <div class="form-group slide-in">
-                    <label class="section-label">1. 選擇教室類型與數量</label>
-                    <div class="input-card flex-row align-items-end" style="gap: 1.5rem; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 250px;">
-                            <label>電腦教室類型：</label>
-                            <select id="classroom-type" class="premium-select" onchange="updateRoomMaxLimit()">
-                                <option value="12000" data-max="6">一般電腦教室 (未滿70人) - $12,000 / 時段</option>
-                                <option value="15000" data-max="3">大型電腦教室 (70人以上) - $15,000 / 時段</option>
-                                <option value="20000" data-max="2">AI 專業教室 (含算力) - $20,000 / 時段</option>
-                            </select>
-                        </div>
-                        <div style="flex: 0 0 160px;">
-                            <label>間數 (上限 <span id="room-limit" class="text-warning font-weight-bold">6</span> 間)：</label>
-                            <div class="number-control" style="background:#f8fafc; width:100%;">
-                                <button type="button" onclick="updateCount('room-quantity', -1)" style="flex:1">-</button>
-                                <input type="number" id="room-quantity" value="1" min="1" max="6" style="flex:1" onchange="validateRoomLimit()">
-                                <button type="button" onclick="updateCount('room-quantity', 1)" style="flex:1">+</button>
+                    <label class="section-label">1. 新增租借項目至清單</label>
+                    <div class="input-card outline-card" style="background:#F8FAFC;">
+                        <!-- Type and Quantity -->
+                        <div class="flex-row align-items-end mb-3" style="gap: 1.5rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <label>電腦教室類型：</label>
+                                <select id="item-type" class="premium-select" onchange="updateItemRoomLimit()">
+                                    <option value="12000" data-max="6" data-name="一般電腦教室">一般電腦教室 (未滿70人) - $12,000/時段</option>
+                                    <option value="15000" data-max="3" data-name="大型電腦教室">大型電腦教室 (70人以上) - $15,000/時段</option>
+                                    <option value="20000" data-max="2" data-name="AI 專業教室">AI 專業教室 (含算力) - $20,000/時段</option>
+                                </select>
+                            </div>
+                            <div style="flex: 0 0 160px;">
+                                <label>間數 (上限 <span id="item-room-limit" class="text-warning font-weight-bold">6</span> 間)：</label>
+                                <div class="number-control w-100" style="background:white;">
+                                    <button type="button" onclick="updateItemCount('item-rooms', -1)">-</button>
+                                    <input type="number" id="item-rooms" value="1" min="1" max="6" onchange="validateItemLimit()">
+                                    <button type="button" onclick="updateItemCount('item-rooms', 1)">+</button>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Segments and Personnel -->
+                        <div class="flex-row align-items-end mb-3" style="gap: 1rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 140px;">
+                                <label>總時段數：</label>
+                                <div class="number-control w-100" style="background:white;">
+                                    <button type="button" onclick="updateItemCount('item-segments', -1)">-</button>
+                                    <input type="number" id="item-segments" value="1" min="1">
+                                    <button type="button" onclick="updateItemCount('item-segments', 1)">+</button>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 140px;">
+                                <label>平日協助(人/天)：</label>
+                                <div class="number-control w-100" style="background:white;">
+                                    <button type="button" onclick="updateItemCount('item-weekday-personnel', -1)">-</button>
+                                    <input type="number" id="item-weekday-personnel" value="0" min="0">
+                                    <button type="button" onclick="updateItemCount('item-weekday-personnel', 1)">+</button>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 140px;">
+                                <label>假日協助(人/天)：</label>
+                                <div class="number-control w-100" style="background:white;">
+                                    <button type="button" onclick="updateItemCount('item-weekend-personnel', -1)">-</button>
+                                    <input type="number" id="item-weekend-personnel" value="0" min="0">
+                                    <button type="button" onclick="updateItemCount('item-weekend-personnel', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn-primary w-100 mt-2" onclick="addToCart()">➕ 加入租借清單</button>
                     </div>
                 </div>
 
-                <!-- 2. 日期選擇與每日購物車 -->
+                <!-- 2. 租借清單 (Cart) -->
                 <div class="form-group slide-in" style="animation-delay: 0.1s;">
-                    <label class="section-label">2. 租用日程與人員配置</label>
-                    <div class="input-card outline-card date-picker-card">
-                        <div class="flex-row">
-                            <div class="col-half">
-                                <label>開始日期</label>
-                                <input type="date" id="start-date" class="premium-input">
-                            </div>
-                            <div class="col-half">
-                                <label>結束日期</label>
-                                <input type="date" id="end-date" class="premium-input">
-                            </div>
-                        </div>
-                        <button type="button" class="btn-secondary w-100 mt-3"
-                            onclick="generateDays()">依日期展開每日配置清單</button>
-                    </div>
-
-                    <div id="cart-container" class="mt-3">
-                        <!-- 動態生成的每日卡片會放在這 -->
-                        <div class="empty-cart-message text-center text-muted"
-                            style="padding: 2rem; border: 2px dashed #CBD5E1; border-radius: var(--border-radius-sm);">
-                            👉 請先選擇起訖日期並點擊按鈕，即可針對每一天設定時段與所需協助人員。
+                    <label class="section-label">2. 目前租借清單</label>
+                    <div id="cart-container" class="cart-container" style="min-height: 100px;">
+                        <div id="empty-cart-message" class="text-center text-muted" style="padding: 2rem; border: 2px dashed #CBD5E1; border-radius: var(--border-radius-sm);">
+                            🛒 你的清單目前是空的，請從上方新增。
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. 環境與軟硬體雜費 -->
                 <div class="form-group slide-in" style="animation-delay: 0.2s;">
-                    <label class="section-label">3. 環境軟體與空調 (空調依時段自動計算)</label>
-                    <div class="input-card checkbox-grid">
+                    <label class="section-label">3. 全域費用與優惠身分 (空調依清單自動加總)</label>
+                    <div class="input-card checkbox-grid mb-3">
                         <label class="custom-checkbox">
-                            <input type="checkbox" id="software-install" value="2000">
+                            <input type="checkbox" id="software-install" value="2000" onchange="calculateTotal()">
                             <span class="checkmark"></span>
                             <div>
                                 <span class="chk-title">環境部署/軟體安裝</span>
@@ -88,33 +104,27 @@
                             <input type="checkbox" id="microsoft-license" value="2000" checked disabled>
                             <span class="checkmark" style="background-color: #E2E8F0; border-color: #CBD5E1;"></span>
                             <div>
-                                <span class="chk-title">微軟商用授權費 (必定收取)</span>
-                                <span class="chk-desc">$2,000 / 次</span>
+                                <span class="chk-title">微軟商用授權費</span>
+                                <span class="chk-desc">$2,000 (必定收取)</span>
                             </div>
                         </label>
                     </div>
-                </div>
-            </div>
 
-            <!-- 4. 優惠身分 -->
-            <div class="form-group slide-in" style="animation-delay: 0.3s;">
-                <label class="section-label">4. 折扣與優惠資格</label>
-                <div class="input-card">
-                    <select id="discount-type" class="premium-select" onchange="toggleDiscountDetail()">
-                        <option value="1">一般民營機構 (無折扣)</option>
-                        <option value="custom">優待專案對象 / 策略聯盟夥伴 (自訂折扣)</option>
-                    </select>
-                    <div id="discount-detail" class="hidden-details mt-2">
-                        <label>約定折扣折數 (例如 8 折請輸入 80)：</label>
-                        <div class="discount-input-wrapper">
-                            <input type="number" id="discount-rate" value="80" min="1" max="100"
-                                class="premium-input text-right">
-                            <span class="unit">%</span>
+                    <div class="input-card">
+                        <select id="discount-type" class="premium-select" onchange="toggleDiscountDetail()">
+                            <option value="1">一般民營機構 (無折扣)</option>
+                            <option value="custom">優待專案對象 / 策略聯盟夥伴 (自訂折扣)</option>
+                        </select>
+                        <div id="discount-detail" class="hidden-details mt-2">
+                            <label>約定折扣折數 (例如 8 折請輸入 80)：</label>
+                            <div class="discount-input-wrapper">
+                                <input type="number" id="discount-rate" value="80" min="1" max="100" class="premium-input text-right" onchange="calculateTotal()">
+                                <span class="unit">%</span>
+                            </div>
+                            <small class="text-muted">※折扣適用於場地費、軟體佈署與空調費（人員協助費除外）。</small>
                         </div>
-                        <small class="text-muted">※折扣適用於場地費、軟體佈署與空調費（人員協助費除外）。</small>
                     </div>
                 </div>
-            </div>
 
         </div>
 
