@@ -3,7 +3,6 @@ let cartIdCounter = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     // 綁定基礎事件
-    document.getElementById('discount-type').addEventListener('change', toggleDiscountDetail);
     document.getElementById('item-type').addEventListener('change', updateItemRoomLimit);
 
     // 初始限制與計算
@@ -119,18 +118,6 @@ function renderCart() {
     calculateTotal();
 }
 
-function toggleDiscountDetail() {
-    const discountType = document.getElementById('discount-type').value;
-    const detailEl = document.getElementById('discount-detail');
-    if (discountType === 'custom') {
-        detailEl.style.display = 'block';
-    } else {
-        detailEl.style.display = 'none';
-        document.getElementById('discount-rate').value = 100;
-    }
-    calculateTotal();
-}
-
 function formatMoney(num) {
     return '$' + num.toLocaleString('en-US');
 }
@@ -152,23 +139,12 @@ function calculateTotal() {
         personnelTotal += (item.weekendPersonnel * 4000);
     });
 
-    // 軟體費 (全域，無論買多少都不乘倍數，必定一次性)
+    // 軟體費 (全域)
     let softwareTotal = 2000; // 微軟必定收取
     if (document.getElementById('software-install').checked) softwareTotal += 2000;
 
-    // 折扣計算
-    let discountRate = 100;
-    if (document.getElementById('discount-type').value === 'custom') {
-        discountRate = parseInt(document.getElementById('discount-rate').value) || 100;
-        if (discountRate < 0) discountRate = 0;
-        if (discountRate > 100) discountRate = 100;
-    }
-
-    const discountableAmount = venueTotal + softwareTotal + acTotal;
-    const discountMinus = discountableAmount * (1 - (discountRate / 100));
-
     // 小計與保證金
-    const subtotal = discountableAmount + personnelTotal - discountMinus;
+    const subtotal = venueTotal + softwareTotal + acTotal + personnelTotal;
     const deposit = Math.round(subtotal * 0.3);
     const grandTotal = subtotal + deposit;
 
@@ -178,14 +154,6 @@ function calculateTotal() {
     document.getElementById('res-software').innerText = formatMoney(softwareTotal);
     document.getElementById('res-ac').innerText = formatMoney(acTotal);
     
-    const discountRow = document.getElementById('discount-row');
-    if (discountMinus > 0) {
-        discountRow.classList.remove('hidden');
-        document.getElementById('res-discount').innerText = '- ' + formatMoney(Math.round(discountMinus));
-    } else {
-        discountRow.classList.add('hidden');
-    }
-
     document.getElementById('res-subtotal').innerText = formatMoney(Math.round(subtotal));
     document.getElementById('res-deposit').innerText = formatMoney(deposit);
     document.getElementById('res-total').innerText = formatMoney(Math.round(grandTotal));
