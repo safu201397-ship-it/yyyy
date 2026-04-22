@@ -477,3 +477,90 @@ input:checked + .slider:before {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Daily Config Card */
+.daily-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+.daily-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: var(--shadow-md);
+}
+.daily-card-header {
+    background: #F1F5F9;
+    padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #E2E8F0;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--primary-dark);
+}
+.daily-card-body {
+    padding: 1.2rem;
+}
+.segments-wrapper {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    background: #F8FAFC;
+    padding: 1rem;
+    border-radius: var(--border-radius-sm);
+    border: 1px dashed #CBD5E1;
+}
+.segment-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+.segment-checkbox input {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+.holiday-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: normal;
+    cursor: pointer;
+    background: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+}
+.holiday-toggle input {
+    accent-color: var(--accent);
+}
+.personnel-config {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.btn-secondary {
+    background: #E2E8F0;
+    color: var(--primary-dark);
+    border: none;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-secondary:hover {
+    background: #CBD5E1;
+    color: var(--primary);
+}

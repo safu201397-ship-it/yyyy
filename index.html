@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>電腦教室租用費用懶人試算表</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="calculator-container">
         <div class="calculator-header">
@@ -17,61 +21,60 @@
         <div class="calculator-grid">
             <!-- Left Column: Inputs -->
             <div class="calc-section inputs-section">
-                
-                <!-- 1. 教室類型與時段 -->
+
+                <!-- 1. 教室類型與數量 -->
                 <div class="form-group slide-in">
-                    <label class="section-label">1. 選擇教室類型與時段</label>
-                    <div class="input-card">
-                        <label for="classroom-type">電腦教室類型 (每 4 小時為一時段)：</label>
-                        <select id="classroom-type" class="premium-select">
-                            <option value="12000">一般電腦教室 (70人以下) - $12,000 / 時段</option>
-                            <option value="15000">大型電腦教室 (70人以上) - $15,000 / 時段</option>
-                            <option value="20000">AI 專業教室 (含算力) - $20,000 / 時段</option>
-                        </select>
-                        
-                        <div class="number-control-group mt-3">
-                            <label>租用時段數量：</label>
-                            <div class="number-control">
-                                <button type="button" onclick="updateCount('segment-count', -1)">-</button>
-                                <input type="number" id="segment-count" value="1" min="1">
-                                <button type="button" onclick="updateCount('segment-count', 1)">+</button>
+                    <label class="section-label">1. 選擇教室類型與數量</label>
+                    <div class="input-card flex-row align-items-end" style="gap: 1.5rem; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <label>電腦教室類型：</label>
+                            <select id="classroom-type" class="premium-select" onchange="updateRoomMaxLimit()">
+                                <option value="12000" data-max="6">一般電腦教室 (未滿70人) - $12,000 / 時段</option>
+                                <option value="15000" data-max="3">大型電腦教室 (70人以上) - $15,000 / 時段</option>
+                                <option value="20000" data-max="2">AI 專業教室 (含算力) - $20,000 / 時段</option>
+                            </select>
+                        </div>
+                        <div style="flex: 0 0 160px;">
+                            <label>間數 (上限 <span id="room-limit" class="text-warning font-weight-bold">6</span> 間)：</label>
+                            <div class="number-control" style="background:#f8fafc; width:100%;">
+                                <button type="button" onclick="updateCount('room-quantity', -1)" style="flex:1">-</button>
+                                <input type="number" id="room-quantity" value="1" min="1" max="6" style="flex:1" onchange="validateRoomLimit()">
+                                <button type="button" onclick="updateCount('room-quantity', 1)" style="flex:1">+</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. 人員協助 -->
+                <!-- 2. 日期選擇與每日購物車 -->
                 <div class="form-group slide-in" style="animation-delay: 0.1s;">
-                    <label class="section-label">2. 專業人員協助</label>
-                    <div class="input-card outline-card">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="need-personnel" onchange="toggleDisplay('personnel-details', this.checked)">
-                            <span class="slider round"></span>
-                            <span class="toggle-label">需要人員協助 (含開關門、設備指引)</span>
-                        </label>
-                        
-                        <div id="personnel-details" class="hidden-details pt-3">
-                            <div class="flex-row">
-                                <div class="col-half">
-                                    <label>平日天數 ($2,000/天)</label>
-                                    <input type="number" id="weekday-days" value="1" min="0" class="premium-input">
-                                </div>
-                                <div class="col-half">
-                                    <label>假日天數 ($4,000/天)</label>
-                                    <input type="number" id="weekend-days" value="0" min="0" class="premium-input">
-                                </div>
+                    <label class="section-label">2. 租用日程與人員配置</label>
+                    <div class="input-card outline-card date-picker-card">
+                        <div class="flex-row">
+                            <div class="col-half">
+                                <label>開始日期</label>
+                                <input type="date" id="start-date" class="premium-input">
                             </div>
-                            <div class="mt-2">
-                                <label>協助人數</label>
-                                <input type="number" id="personnel-count" value="1" min="1" class="premium-input">
+                            <div class="col-half">
+                                <label>結束日期</label>
+                                <input type="date" id="end-date" class="premium-input">
                             </div>
+                        </div>
+                        <button type="button" class="btn-secondary w-100 mt-3"
+                            onclick="generateDays()">依日期展開每日配置清單</button>
+                    </div>
+
+                    <div id="cart-container" class="mt-3">
+                        <!-- 動態生成的每日卡片會放在這 -->
+                        <div class="empty-cart-message text-center text-muted"
+                            style="padding: 2rem; border: 2px dashed #CBD5E1; border-radius: var(--border-radius-sm);">
+                            👉 請先選擇起訖日期並點擊按鈕，即可針對每一天設定時段與所需協助人員。
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. 環境與軟硬體雜費 -->
                 <div class="form-group slide-in" style="animation-delay: 0.2s;">
-                    <label class="section-label">3. 環境部署與其他費用</label>
+                    <label class="section-label">3. 環境軟體與空調 (空調依時段自動計算)</label>
                     <div class="input-card checkbox-grid">
                         <label class="custom-checkbox">
                             <input type="checkbox" id="software-install" value="2000">
@@ -90,98 +93,90 @@
                             </div>
                         </label>
                     </div>
-                    
-                    <div class="input-card mt-3">
-                        <div class="number-control-group flex-between">
-                            <label>空調使用時數 ($300/時)：</label>
-                            <div class="number-control">
-                                <button type="button" onclick="updateCount('ac-hours', -1)">-</button>
-                                <input type="number" id="ac-hours" value="0" min="0">
-                                <button type="button" onclick="updateCount('ac-hours', 1)">+</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- 4. 優惠身分 -->
-                <div class="form-group slide-in" style="animation-delay: 0.3s;">
-                    <label class="section-label">4. 折扣與優惠資格</label>
-                    <div class="input-card">
-                        <select id="discount-type" class="premium-select" onchange="toggleDiscountDetail()">
-                            <option value="1">一般民營機構 (無折扣)</option>
-                            <option value="custom">優待專案對象 / 策略聯盟夥伴 (自訂折扣)</option>
-                        </select>
-                        <div id="discount-detail" class="hidden-details mt-2">
-                            <label>約定折扣折數 (例如 8 折請輸入 80)：</label>
-                            <div class="discount-input-wrapper">
-                                <input type="number" id="discount-rate" value="80" min="1" max="100" class="premium-input text-right">
-                                <span class="unit">%</span>
-                            </div>
-                            <small class="text-muted">※折扣適用於場地費、軟體佈署與空調費（人員協助費除外）。</small>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Right Column: Results sticky -->
-            <div class="calc-section results-section">
-                <div class="sticky-receipt">
-                    <div class="receipt-header">
-                        <h2>🧾 費用估算明細</h2>
+            <!-- 4. 優惠身分 -->
+            <div class="form-group slide-in" style="animation-delay: 0.3s;">
+                <label class="section-label">4. 折扣與優惠資格</label>
+                <div class="input-card">
+                    <select id="discount-type" class="premium-select" onchange="toggleDiscountDetail()">
+                        <option value="1">一般民營機構 (無折扣)</option>
+                        <option value="custom">優待專案對象 / 策略聯盟夥伴 (自訂折扣)</option>
+                    </select>
+                    <div id="discount-detail" class="hidden-details mt-2">
+                        <label>約定折扣折數 (例如 8 折請輸入 80)：</label>
+                        <div class="discount-input-wrapper">
+                            <input type="number" id="discount-rate" value="80" min="1" max="100"
+                                class="premium-input text-right">
+                            <span class="unit">%</span>
+                        </div>
+                        <small class="text-muted">※折扣適用於場地費、軟體佈署與空調費（人員協助費除外）。</small>
                     </div>
-                    <div class="receipt-body">
-                        <div class="receipt-row">
-                            <span>場地租用費</span>
-                            <span id="res-venue">$12,000</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span>人員協助費</span>
-                            <span id="res-personnel">$0</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span>環境部署與軟體</span>
-                            <span id="res-software">$0</span>
-                        </div>
-                        <div class="receipt-row">
-                            <span>空調費</span>
-                            <span id="res-ac">$0</span>
-                        </div>
-                        
-                        <div id="discount-row" class="receipt-row text-success hidden">
-                            <span>專案折扣紅利</span>
-                            <span id="res-discount">- $0</span>
-                        </div>
-
-                        <hr class="receipt-divider">
-
-                        <div class="receipt-row subtotal">
-                            <span>小計 (含稅)</span>
-                            <span id="res-subtotal">$12,000</span>
-                        </div>
-                        <div class="receipt-row highlight-row mt-2 text-warning">
-                            <div class="w-100">
-                                <div class="flex-between">
-                                    <span>場地保證金 (30%)</span>
-                                    <span id="res-deposit">$3,600</span>
-                                </div>
-                                <small class="d-block mt-1">※ 無損壞違規於活動後可無息退還</small>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="receipt-footer">
-                        <span>預估總費用</span>
-                        <span id="res-total" class="grand-total">$15,600</span>
-                    </div>
-                    
-                    <button class="btn-primary w-100 mt-4" onclick="window.print()">列印/儲存試算表</button>
-                    <p class="disclaimer mt-3 text-center text-muted">※ 此表僅供參考，實際收費以圖資處最終報價與合約為準。</p>
                 </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Results sticky -->
+        <div class="calc-section results-section">
+            <div class="sticky-receipt">
+                <div class="receipt-header">
+                    <h2>🧾 費用估算明細</h2>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-row">
+                        <span>場地租用費</span>
+                        <span id="res-venue">$12,000</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>人員協助費</span>
+                        <span id="res-personnel">$0</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>環境部署與軟體</span>
+                        <span id="res-software">$0</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>空調費</span>
+                        <span id="res-ac">$0</span>
+                    </div>
+
+                    <div id="discount-row" class="receipt-row text-success hidden">
+                        <span>專案折扣紅利</span>
+                        <span id="res-discount">- $0</span>
+                    </div>
+
+                    <hr class="receipt-divider">
+
+                    <div class="receipt-row subtotal">
+                        <span>小計 (含稅)</span>
+                        <span id="res-subtotal">$12,000</span>
+                    </div>
+                    <div class="receipt-row highlight-row mt-2 text-warning">
+                        <div class="w-100">
+                            <div class="flex-between">
+                                <span>場地保證金 (30%)</span>
+                                <span id="res-deposit">$3,600</span>
+                            </div>
+                            <small class="d-block mt-1">※ 無損壞違規於活動後可無息退還</small>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="receipt-footer">
+                    <span>預估總費用</span>
+                    <span id="res-total" class="grand-total">$15,600</span>
+                </div>
+
+                <button class="btn-primary w-100 mt-4" onclick="window.print()">列印/儲存試算表</button>
+                <p class="disclaimer mt-3 text-center text-muted">※ 此表僅供參考，實際收費以圖資處最終報價與合約為準。</p>
             </div>
         </div>
+    </div>
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
